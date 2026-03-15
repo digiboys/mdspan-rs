@@ -1,0 +1,20 @@
+{
+  "languages": {
+    "Rust": {
+      "formatter": {
+        "external": {
+          // update after https://github.com/zed-industries/zed/issues/50536
+          "command": "/Users/oliver/repos/mdspan-rs/bazel-out/../../../external/rules_rust++rust+rustfmt_nightly-2026-02-12__aarch64-apple-darwin_tools/bin/rustfmt",
+          "arguments": [
+            "--style-edition",
+            "2024",
+            "--emit",
+            "stdout",
+            "--config-path",
+            "/Users/oliver/repos/mdspan-rs/rustfmt.toml",
+          ],
+        },
+      },
+    },
+  },
+}
