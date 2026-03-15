@@ -1,1 +1,0 @@
-- https://bazelbuild.github.io/rules_rust/rust_analyzer.html#project-auto-discovery

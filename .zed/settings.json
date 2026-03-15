@@ -28,6 +28,26 @@
     },
   },
   "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "workspace": {
+          "discoverConfig": {
+            "command": [
+              // update after https://github.com/zed-industries/zed/issues/50536
+              "/Users/oliver/repos/mdspan-rs/tools/rust-analyzer/project-config.bash",
+              "{arg}",
+            ],
+            "progressLabel": "rust_analyzer",
+            "filesToWatch": ["BUILD.bazel", "MODULE.bazel"],
+          },
+        },
+      },
+      // fetch with
+      // bazel build //tools/rust-analyzer/...
+      "binary": {
+        "path": "/Users/oliver/repos/mdspan-rs/bazel-out/../../../external/rules_rust++rust+rust_analyzer_1.86.0_tools/bin/rust-analyzer",
+      },
+    },
     "starpls": {
       "binary": {
         "arguments": [
