@@ -1,5 +1,7 @@
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 
+exports_files(["rustfmt.toml"])
+
 rust_library(
     name = "dummy",
     srcs = ["src/lib.rs"],
