@@ -16,5 +16,27 @@
         },
       },
     },
+    "Starlark": {
+      "language_servers": ["starpls"],
+      "formatter": {
+        "external": {
+          // update after https://github.com/zed-industries/zed/issues/50536
+          "command": "/Users/oliver/repos/mdspan-rs/bazel-out/../../../external/buildifier_prebuilt++buildifier_prebuilt_deps_extension+buildifier_darwin_arm64/file/buildifier",
+          "arguments": ["--path", "{buffer_path}"],
+        },
+      },
+    },
+  },
+  "lsp": {
+    "starpls": {
+      "binary": {
+        "arguments": [
+          "server",
+          "--experimental_enable_label_completions",
+          "--experimental_use_code_flow_analysis",
+          "--experimental_infer_ctx_attributes",
+        ],
+      },
+    },
   },
 }

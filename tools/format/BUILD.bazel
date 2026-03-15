@@ -1,0 +1,16 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@rules_multirun//:defs.bzl", "multirun")
+
+buildifier(
+    name = "buildifier",
+    lint_mode = "warn",
+    mode = "fix",
+)
+
+multirun(
+    name = "format",
+    commands = [
+        ":buildifier",
+        "@rules_rust//:rustfmt",
+    ],
+)
