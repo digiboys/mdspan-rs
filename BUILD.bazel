@@ -3,14 +3,28 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 exports_files(["rustfmt.toml"])
 
 rust_library(
-    name = "dummy",
+    name = "mod_mdspan",
+    srcs = ["src/mdspan.rs"],
+    crate_name = "mod_mdspan",
+    edition = "2024",
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+)
+
+rust_library(
+    name = "mdspan",
     srcs = ["src/lib.rs"],
-    crate_name = "dummy",
+    crate_name = "mdspan",
     edition = "2024",
     visibility = ["//visibility:public"],
 )
 
 rust_test(
-    name = "dummy_test",
-    crate = ":dummy",
+    name = "mdspan_test",
+    crate = ":mdspan",
+)
+
+rust_test(
+    name = "mod_mdspan_test",
+    crate = ":mod_mdspan",
 )
