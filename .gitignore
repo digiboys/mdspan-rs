@@ -1,1 +1,4 @@
 bazel-*
+
+# render with ./tools/vscode/render-settings.bash
+.vscode/settings.json
