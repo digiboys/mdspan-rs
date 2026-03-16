@@ -1,5 +1,6 @@
 {
   "editor.formatOnSave": true,
+  "rust-analyzer.diagnostics.experimental.enable": true,
   "[rust]": {
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
@@ -23,6 +24,10 @@
     "stdout",
     "--config-path",
     "__WORKSPACE_ROOT__/rustfmt.toml"
+  ],
+  "rust-analyzer.check.overrideCommand": [
+    "__WORKSPACE_ROOT__/tools/vscode/rust-analyzer-check.bash",
+    "{label}"
   ],
   "rust-analyzer.server.path": "__RUST_ANALYZER_PATH__",
   "rust-analyzer.workspace.discoverConfig": {
