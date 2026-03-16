@@ -4,7 +4,11 @@ set -euo pipefail
 
 workspace_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 
-label_arg="${1:-}"
+label="${1:-}"
+
+if [ -z "$label" ] || [ "$label" = "{label}" ]; then
+    label="//..."
+fi
 
 startup_options=(
     "--output_base=$workspace_dir/bazel-rust-analyzer"
@@ -17,13 +21,6 @@ common_args=(
     "--@rules_rust//rust/settings:error_format=json"
     "--output_groups=+clippy_output"
 )
-
-label="$label_arg"
-
-if [ -z "$label" ] || [ "$label" = "{label}" ]; then
-    echo "rust-analyzer-check: missing Bazel label from rust-analyzer" >&2
-    exit 1
-fi
 
 build_output="$(mktemp)"
 cleanup() {
