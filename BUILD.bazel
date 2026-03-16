@@ -4,7 +4,9 @@ exports_files(["rustfmt.toml"])
 
 rust_library(
     name = "dummy",
-    srcs = ["src/lib.rs"],
+    srcs = [
+        "src/lib.rs",
+    ],
     crate_name = "dummy",
     edition = "2024",
     visibility = ["//visibility:public"],
