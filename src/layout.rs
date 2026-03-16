@@ -2,12 +2,6 @@ pub trait Mapping {
     type Extents;
     type Indices;
 
-    // type Layout;
-
-    // const IS_ALWAYS_UNIQUE: bool;
-    // const IS_ALWAYS_EXHAUSTIVE: bool;
-    // const IS_ALWAYS_STRIDED: bool;
-
     fn extents(&self) -> &Self::Extents;
 
     fn stride(&self, dimension: usize) -> usize;

@@ -1,7 +1,6 @@
 use core::{marker::PhantomData, ptr::NonNull};
 
 pub trait Accessor {
-    // type Element;
     type DataHandle: Clone;
     type ElementRef<'a>
     where
@@ -28,7 +27,6 @@ pub struct DefaultAccessor<T> {
 }
 
 impl<T> Accessor for DefaultAccessor<T> {
-    // type Element = T;
     type DataHandle = NonNull<T>;
     type ElementRef<'a>
         = &'a T

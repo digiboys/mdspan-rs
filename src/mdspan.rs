@@ -8,8 +8,11 @@ where
     TLayout: Layout,
     TAccessor: Accessor,
 {
+    #[allow(unused)]
     data_handle: TAccessor::DataHandle,
+    #[allow(unused)]
     mapping: TLayout::Mapping<TExtents>,
+    #[allow(unused)]
     accessor: TAccessor,
     _marker: PhantomData<&'a TElement>,
 }
