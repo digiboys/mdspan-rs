@@ -1,8 +1,6 @@
 use std::marker::PhantomData;
 
-trait Accessor {
-    type DataHandle;
-}
+use mod_accessor::*;
 
 trait Layout {
     type Mapping<TExtents>;
@@ -15,5 +13,6 @@ where
 {
     data_handle: TAccessor::DataHandle,
     mapping: TLayout::Mapping<TExtents>,
+    accessor: TAccessor,
     _marker: PhantomData<&'a TElement>,
 }
