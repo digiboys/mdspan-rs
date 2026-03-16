@@ -1,12 +1,9 @@
 use std::marker::PhantomData;
 
 use mod_accessor::*;
+use mod_layout::*;
 
-trait Layout {
-    type Mapping<TExtents>;
-}
-
-struct MDRef<'a, TElement, TExtents, TLayout, TAccessor>
+pub struct MDRef<'a, TElement, TExtents, TLayout, TAccessor>
 where
     TLayout: Layout,
     TAccessor: Accessor,

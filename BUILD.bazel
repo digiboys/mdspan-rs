@@ -10,6 +10,7 @@ rust_library(
     visibility = ["//visibility:public"],
     deps = [
         "mod_accessor",
+        "mod_layout",
         "mod_mdspan",
     ],
 )
@@ -28,6 +29,7 @@ rust_library(
     visibility = ["//visibility:private"],
     deps = [
         "mod_accessor",
+        "mod_layout",
     ],
 )
 
@@ -48,4 +50,20 @@ rust_library(
 rust_test(
     name = "mod_accessor_test",
     crate = ":mod_accessor",
+)
+
+rust_library(
+    name = "mod_layout",
+    srcs = ["src/layout.rs"],
+    crate_name = "mod_layout",
+    edition = "2024",
+    tags = ["manual"],
+    visibility = ["//visibility:private"],
+    deps = [
+    ],
+)
+
+rust_test(
+    name = "mod_layout_test",
+    crate = ":mod_layout",
 )
