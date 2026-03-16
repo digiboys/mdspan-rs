@@ -3,16 +3,71 @@ load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
 exports_files(["rustfmt.toml"])
 
 rust_library(
-    name = "dummy",
+    name = "extents",
+    srcs = [
+        "src/extents.rs",
+    ],
+    crate_name = "mdspan_extents",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+)
+
+rust_library(
+    name = "accessor",
+    srcs = [
+        "src/accessor.rs",
+    ],
+    crate_name = "mdspan_accessor",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+)
+
+rust_library(
+    name = "layout",
+    srcs = [
+        "src/layout.rs",
+    ],
+    crate_features = [],
+    crate_name = "mdspan_layout",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":extents",
+    ],
+)
+
+rust_library(
+    name = "span",
+    srcs = [
+        "src/span.rs",
+    ],
+    crate_name = "mdspan_span",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = [
+        ":accessor",
+        ":extents",
+        ":layout",
+    ],
+)
+
+rust_library(
+    name = "mdspan_rs",
     srcs = [
         "src/lib.rs",
     ],
-    crate_name = "dummy",
+    crate_name = "mdspan_rs",
     edition = "2024",
     visibility = ["//visibility:public"],
+    deps = [
+        ":accessor",
+        ":extents",
+        ":layout",
+        ":span",
+    ],
 )
 
 rust_test(
-    name = "dummy_test",
-    crate = ":dummy",
+    name = "mdspan_rs_test",
+    crate = ":mdspan_rs",
 )
