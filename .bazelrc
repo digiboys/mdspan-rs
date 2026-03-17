@@ -9,4 +9,11 @@ build:rustfmt --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
 build:rustfmt --@rules_rust//rust/settings:rustfmt.toml=//:rustfmt.toml
 build:rustfmt --output_groups=rustfmt_checks
 
+build:rustfix --extra_toolchains=//toolchain:local_rust_stable_clippy_no_fail
+build:rustfix --aspects=//tools/rustfix:aspect.bzl%rustfix_aspect
+build:rustfix --@rules_rust//rust/settings:error_format=json
+build:rustfix --@rules_rust//rust/settings:capture_clippy_output=true
+build:rustfix --output_groups=rustfix
+build:rustfix --config=clippy_settings
+
 test --test_output=errors
