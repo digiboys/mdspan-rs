@@ -20,7 +20,8 @@ rust_library(
     crate_name = "mod_layout",
     edition = "2024",
     deps = [
-        "//src/internal:array_from_fn_rev",
+        "//src/internal:exclusive_product_scan",
+        "//src/internal:inner_product",
     ],
 )
 

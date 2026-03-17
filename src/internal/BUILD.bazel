@@ -8,3 +8,35 @@ rust_library(
     crate_name = "array_from_fn_rev",
     edition = "2024",
 )
+
+rust_library(
+    name = "exclusive_product_scan",
+    srcs = ["exclusive_product_scan.rs"],
+    crate_name = "exclusive_product_scan",
+    edition = "2024",
+    deps = [
+        ":array_from_fn_rev",
+        ":integer",
+    ],
+)
+
+rust_library(
+    name = "inner_product",
+    srcs = ["inner_product.rs"],
+    crate_name = "inner_product",
+    edition = "2024",
+    deps = [
+        ":integer",
+    ],
+)
+
+rust_library(
+    name = "integer",
+    srcs = ["integer.rs"],
+    crate_name = "integer",
+    edition = "2024",
+    deps = [
+        "@crates//:num-integer",
+        "@crates//:num-traits",
+    ],
+)

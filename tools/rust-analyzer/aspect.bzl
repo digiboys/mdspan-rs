@@ -7,6 +7,9 @@ load("@rules_rust//rust:defs.bzl", "rust_clippy_aspect")
 load("@rules_rust//rust:rust_common.bzl", _RUST_COMMON_PROVIDERS = "COMMON_PROVIDERS")
 
 def _clippy_stdout_aspect_impl(target, ctx):
+    if ctx.label.workspace_name:
+        return []
+
     phony_files = []
 
     clippy_output = target[OutputGroupInfo].clippy_output
