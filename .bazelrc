@@ -1,11 +1,10 @@
 build:clippy_settings --@rules_rust//rust/settings:rustc_output_diagnostics=true
 build:clippy_settings --@rules_rust//rust/settings:clippy_output_diagnostics=true
-build:clippy_settings --@rules_rust//rust/settings:capture_clippy_output=true
 
 build:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
-build:clippy --output_groups=+clippy_checks
+build:clippy --output_groups=clippy_checks
 build:clippy --config=clippy_settings
 
 build:rustfmt --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
 build:rustfmt --@rules_rust//rust/settings:rustfmt.toml=//:rustfmt.toml
-build:rustfmt --output_groups=+rustfmt_checks
+build:rustfmt --output_groups=rustfmt_checks

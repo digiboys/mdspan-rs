@@ -14,7 +14,8 @@ bazelisk \
   build \
   --aspects=//tools/rust-analyzer:aspect.bzl%clippy_stdout_aspect \
   --@rules_rust//rust/settings:error_format=json \
+  --@rules_rust//rust/settings:capture_clippy_output=true \
   --output_groups=clippy_stdout \
   --config=clippy_settings \
-  --keep_going  \
+  --keep_going \
   -- "$label" || true
