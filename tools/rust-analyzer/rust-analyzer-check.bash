@@ -10,7 +10,7 @@ if [[ "$label" = "{label}" ]]; then
 fi
 
 bazelisk \
-  "--output_base=bazel-rust-analyzer" \
+  "--output_base=${workspace_dir}/bazel-rust-analyzer" \
   build \
   --aspects=//tools/rust-analyzer:aspect.bzl%clippy_stdout_aspect \
   --@rules_rust//rust/settings:error_format=json \
