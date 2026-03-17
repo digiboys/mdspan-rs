@@ -1,3 +1,7 @@
+"""
+Provides a rust toolchain tools repo where clippy-driver always succeeds.
+"""
+
 load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
 
 STABLE_TOOL_REPOS = [
