@@ -2,10 +2,10 @@
   "editor.formatOnSave": true,
   "rust-analyzer.diagnostics.experimental.enable": true,
   "[rust]": {
-    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    "editor.defaultFormatter": "rust-lang.rust-analyzer",
   },
   "[starlark]": {
-    "editor.defaultFormatter": "BazelBuild.vscode-bazel"
+    "editor.defaultFormatter": "BazelBuild.vscode-bazel",
   },
   "bazel.executable": "bazel",
   "bazel.buildifierExecutable": "__BUILDIFIER_PATH__",
@@ -14,7 +14,7 @@
     "server",
     "--experimental_enable_label_completions",
     "--experimental_use_code_flow_analysis",
-    "--experimental_infer_ctx_attributes"
+    "--experimental_infer_ctx_attributes",
   ],
   "rust-analyzer.rustfmt.overrideCommand": [
     "__RUSTFMT_PATH__",
@@ -23,23 +23,19 @@
     "--emit",
     "stdout",
     "--config-path",
-    "__WORKSPACE_ROOT__/rustfmt.toml"
+    "__WORKSPACE_ROOT__/rustfmt.toml",
   ],
   "rust-analyzer.check.overrideCommand": [
-    "__WORKSPACE_ROOT__/tools/vscode/rust-analyzer-check.bash",
-    "{label}"
+    "__WORKSPACE_ROOT__/tools/rust-analyzer/rust-analyzer-check.bash",
+    "{label}",
   ],
   "rust-analyzer.server.path": "__RUST_ANALYZER_PATH__",
   "rust-analyzer.workspace.discoverConfig": {
     "command": [
       "__WORKSPACE_ROOT__/tools/rust-analyzer/project-config.bash",
-      "{arg}"
+      "{arg}",
     ],
     "progressLabel": "rust_analyzer",
-    "filesToWatch": [
-      "BUILD",
-      "BUILD.bazel",
-      "MODULE.bazel"
-    ]
-  }
+    "filesToWatch": ["BUILD", "BUILD.bazel", "MODULE.bazel"],
+  },
 }

@@ -30,6 +30,13 @@
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
+        "check": {
+          "overrideCommand": [
+            // update after https://github.com/zed-industries/zed/issues/50536
+            "/Users/oliver/repos/mdspan-rs/tools/rust-analyzer/rust-analyzer-check.bash",
+            "{label}",
+          ],
+        },
         "workspace": {
           "discoverConfig": {
             "command": [
