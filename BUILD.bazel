@@ -67,3 +67,13 @@ rust_test(
     name = "mod_layout_test",
     crate = ":mod_layout",
 )
+
+rust_library(
+    name = "trigger_build_error",
+    srcs = ["src/trigger_build_error.rs"],
+    crate_name = "trigger_build_error",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = [
+    ],
+)
