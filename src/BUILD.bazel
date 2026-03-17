@@ -1,0 +1,62 @@
+load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+
+package(default_visibility = ["//:__subpackages__"])
+
+rust_library(
+    name = "mod_accessor",
+    srcs = ["accessor.rs"],
+    crate_name = "mod_accessor",
+    edition = "2024",
+)
+
+rust_test(
+    name = "mod_accessor_test",
+    crate = ":mod_accessor",
+)
+
+rust_library(
+    name = "mod_layout",
+    srcs = ["layout.rs"],
+    crate_name = "mod_layout",
+    edition = "2024",
+    deps = [
+    ],
+)
+
+rust_test(
+    name = "mod_layout_test",
+    crate = ":mod_layout",
+)
+
+rust_library(
+    name = "mod_mdspan",
+    srcs = ["mdspan.rs"],
+    crate_name = "mod_mdspan",
+    edition = "2024",
+    deps = [
+        "mod_accessor",
+        "mod_layout",
+    ],
+)
+
+rust_test(
+    name = "mod_mdspan_test",
+    crate = ":mod_mdspan",
+)
+
+rust_library(
+    name = "mdspan",
+    srcs = ["lib.rs"],
+    crate_name = "mdspan",
+    edition = "2024",
+    deps = [
+        ":mod_accessor",
+        ":mod_layout",
+        ":mod_mdspan",
+    ],
+)
+
+rust_test(
+    name = "mdspan_test",
+    crate = ":mdspan",
+)
