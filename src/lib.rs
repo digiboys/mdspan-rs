@@ -4,67 +4,57 @@
 
 use core::{
     iter::Sum,
-    ops::{Add, Deref, Mul},
+    ops::{Add, Mul},
 };
 use std::marker::PhantomData;
 
 pub trait Layout {
-    type IndexTypeN;
-    type IndexType1;
+    type Extent;
+    type Stride;
 
-    fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::IndexType1>
+    fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::Stride>
     where
-        for<'a> &'a TIndices: IntoIterator,
-        for<'a> Self::IndexTypeN: CopyFromRef<<&'a TIndices as IntoIterator>::Item>;
+        for<'a> &'a TIndices: IntoIterator<Item = &'a Self::Stride>;
 }
 
-pub struct AxialLayout<TExtents, TStrides, IndexTypeN, IndexType1> {
+pub struct AxialLayout<TExtents, TStrides, Textent, TStride> {
     extents: TExtents,
     strides: TStrides,
-    index_type_n: PhantomData<IndexTypeN>,
-    index_type_1: PhantomData<IndexType1>,
+    _extent_type: PhantomData<Textent>,
+    _stride_type: PhantomData<TStride>,
 }
 
-pub trait CopyFromRef<U> {
-    fn copy_from_ref(value: U) -> Self;
-}
-
-impl<T, U> CopyFromRef<&U> for T
-where
-    U: Copy,
-    T: From<U>,
-{
-    #[inline]
-    fn copy_from_ref(value: &U) -> Self {
-        From::from(*value)
+impl<TExtents, TStrides, TExtent, TStride> AxialLayout<TExtents, TStrides, TExtent, TStride> {
+    pub fn new(extents: TExtents, strides: TStrides) -> Self
+    where
+        for<'a> &'a TExtents: IntoIterator<Item = &'a TExtent>,
+        for<'a> &'a TStrides: IntoIterator<Item = &'a TStride>,
+    {
+        Self {
+            extents,
+            strides,
+            _extent_type: PhantomData,
+            _stride_type: PhantomData,
+        }
     }
 }
 
-impl<TExtents, TStrides, IndexTypeN, IndexType1> Layout for AxialLayout<TExtents, TStrides, IndexTypeN, IndexType1>
+impl<TExtents, TStrides, Extent, Stride> Layout for AxialLayout<TExtents, TStrides, Extent, Stride>
 where
-    for<'a> &'a TExtents: IntoIterator,
-    for<'a> IndexTypeN: CopyFromRef<<&'a TExtents as IntoIterator>::Item>,
-    for<'a> &'a TStrides: IntoIterator,
-    for<'a> IndexType1: CopyFromRef<<&'a TStrides as IntoIterator>::Item>,
-    IndexType1: From<IndexTypeN> + Mul<Output = IndexType1> + Add<Output = IndexType1> + Sum,
-    IndexTypeN: Ord,
+    for<'a> &'a TExtents: IntoIterator<Item = &'a Extent>,
+    for<'a> &'a TStrides: IntoIterator<Item = &'a Stride>,
+    Extent: Copy + Into<Stride>,
+    Stride: Copy + Ord + Add<Output = Stride> + Mul<Output = Stride> + Sum,
 {
-    type IndexTypeN = IndexTypeN;
-    type IndexType1 = IndexType1;
+    type Extent = Extent;
+    type Stride = Stride;
 
-    fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::IndexType1>
+    fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::Stride>
     where
-        for<'a> &'a TIndices: IntoIterator,
-        for<'a> IndexTypeN: CopyFromRef<<&'a TIndices as IntoIterator>::Item>,
+        for<'a> &'a TIndices: IntoIterator<Item = &'a Self::Stride>,
     {
-        if std::iter::zip(indices, &self.extents)
-            .all(|(i, e)| IndexTypeN::copy_from_ref(i) < IndexTypeN::copy_from_ref(e))
-        {
-            Some(
-                std::iter::zip(indices, &self.strides)
-                    .map(|(i, s)| IndexType1::from(IndexTypeN::copy_from_ref(i)) * IndexType1::copy_from_ref(s))
-                    .sum(),
-            )
+        if std::iter::zip(indices, &self.extents).all(|(&i, &e)| i < e.into()) {
+            Some(std::iter::zip(indices, &self.strides).map(|(&i, &s)| i * s).sum())
         } else {
             None
         }
@@ -98,31 +88,14 @@ mod tests {
         }
     }
 
-    trait TupleIntoArray<T, const N: usize> {
-        fn into_array(self) -> [T; N];
-    }
-
-    impl<T0, T1, T> TupleIntoArray<T, 2> for (T0, T1)
-    where
-        T0: Into<T>,
-        T1: Into<T>,
-    {
-        fn into_array(self) -> [T; 2] {
-            [self.0.into(), self.1.into()]
-        }
-    }
-
     #[test]
     fn x() {
-        let layout = AxialLayout {
-            extents: ChunkExtents,
-            strides: ChunkStrides,
-            index_type_n: PhantomData::<u8>,
-            index_type_1: PhantomData::<u16>,
-        };
-
+        let layout = AxialLayout::new(ChunkExtents, ChunkStrides);
         assert_eq!(std::mem::size_of_val(&layout), 0);
+        assert_eq!(layout.flatten(&[1, 2, 3]), Some(1024 + 64 + 3));
 
-        assert_eq!(layout.flatten::<[u8; 3]>(&[1, 2, 3]), Some(1024 + 64 + 3));
+        let layout = AxialLayout::new([32u16; 3], ChunkStrides);
+        assert_eq!(std::mem::size_of_val(&layout), 6);
+        assert_eq!(layout.flatten(&[1, 2, 3]), Some(1024 + 64 + 3));
     }
 }
