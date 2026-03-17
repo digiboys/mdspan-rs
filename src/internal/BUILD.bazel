@@ -3,9 +3,9 @@ load("@rules_rust//rust:defs.bzl", "rust_library")
 package(default_visibility = ["//src:__pkg__"])
 
 rust_library(
-    name = "array_from_fn_rev",
-    srcs = ["array_from_fn_rev.rs"],
-    crate_name = "array_from_fn_rev",
+    name = "constant",
+    srcs = ["constant.rs"],
+    crate_name = "constant",
     edition = "2024",
 )
 
@@ -17,15 +17,20 @@ rust_library(
 )
 
 rust_library(
-    name = "exclusive_product_scan",
-    srcs = ["exclusive_product_scan.rs"],
-    crate_name = "exclusive_product_scan",
+    name = "exclusive_product_scan_from",
+    srcs = ["exclusive_product_scan_from.rs"],
+    crate_name = "exclusive_product_scan_from",
     edition = "2024",
     deps = [
-        ":array_from_fn_rev",
-        ":direction",
         ":integer",
     ],
+)
+
+rust_library(
+    name = "fill_from_fn",
+    srcs = ["fill_from_fn.rs"],
+    crate_name = "fill_from_fn",
+    edition = "2024",
 )
 
 rust_library(
@@ -46,5 +51,26 @@ rust_library(
     deps = [
         "@crates//:num-integer",
         "@crates//:num-traits",
+    ],
+)
+
+rust_library(
+    name = "rev_if",
+    srcs = ["rev_if.rs"],
+    crate_name = "rev_if",
+    edition = "2024",
+    deps = [
+        ":direction",
+        "@crates//:either",
+    ],
+)
+
+rust_library(
+    name = "to_usize",
+    srcs = ["to_usize.rs"],
+    crate_name = "to_usize",
+    edition = "2024",
+    deps = [
+        ":integer",
     ],
 )
