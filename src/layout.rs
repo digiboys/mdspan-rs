@@ -93,4 +93,11 @@ mod tests {
             .all(|(i, s)| mapping.stride(i) == s)
         );
     }
+
+    #[test]
+    #[should_panic(expected = "dimension out of bounds")]
+    fn test_layout_right_mapping_stride_out_of_bounds() {
+        let mapping = LayoutRightMapping([4, 3, 2]);
+        mapping.stride(3);
+    }
 }
