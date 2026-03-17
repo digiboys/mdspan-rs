@@ -15,9 +15,7 @@ pub trait Layout {
     fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::IndexType1>
     where
         for<'a> &'a TIndices: IntoIterator,
-        for<'a> <&'a TIndices as IntoIterator>::Item: Deref,
-        for<'a> <<&'a TIndices as IntoIterator>::Item as Deref>::Target: Copy,
-        for<'a> Self::IndexTypeN: From<<<&'a TIndices as IntoIterator>::Item as Deref>::Target>;
+        for<'a> Self::IndexTypeN: CopyFromRef<<&'a TIndices as IntoIterator>::Item>;
 }
 
 pub struct AxialLayout<TExtents, TStrides, IndexTypeN, IndexType1> {
@@ -27,18 +25,17 @@ pub struct AxialLayout<TExtents, TStrides, IndexTypeN, IndexType1> {
     index_type_1: PhantomData<IndexType1>,
 }
 
-trait CopyFromDeref<T> {
-    fn copy_from_deref(value: T) -> Self;
+pub trait CopyFromRef<U> {
+    fn copy_from_ref(value: U) -> Self;
 }
 
-impl<T, U> CopyFromDeref<U> for T
+impl<T, U> CopyFromRef<&U> for T
 where
-    U: Deref,
-    <U as Deref>::Target: Copy,
-    T: From<<U as Deref>::Target>,
+    U: Copy,
+    T: From<U>,
 {
     #[inline]
-    fn copy_from_deref(value: U) -> Self {
+    fn copy_from_ref(value: &U) -> Self {
         From::from(*value)
     }
 }
@@ -46,13 +43,9 @@ where
 impl<TExtents, TStrides, IndexTypeN, IndexType1> Layout for AxialLayout<TExtents, TStrides, IndexTypeN, IndexType1>
 where
     for<'a> &'a TExtents: IntoIterator,
-    for<'a> <&'a TExtents as IntoIterator>::Item: Deref,
-    for<'a> <<&'a TExtents as IntoIterator>::Item as Deref>::Target: Copy,
-    for<'a> IndexTypeN: From<<<&'a TExtents as IntoIterator>::Item as Deref>::Target>,
+    for<'a> IndexTypeN: CopyFromRef<<&'a TExtents as IntoIterator>::Item>,
     for<'a> &'a TStrides: IntoIterator,
-    for<'a> <&'a TStrides as IntoIterator>::Item: Deref,
-    for<'a> <<&'a TStrides as IntoIterator>::Item as Deref>::Target: Copy,
-    for<'a> IndexType1: From<<<&'a TStrides as IntoIterator>::Item as Deref>::Target>,
+    for<'a> IndexType1: CopyFromRef<<&'a TStrides as IntoIterator>::Item>,
     IndexType1: From<IndexTypeN> + Mul<Output = IndexType1> + Add<Output = IndexType1> + Sum,
     IndexTypeN: Ord,
 {
@@ -62,14 +55,14 @@ where
     fn flatten<TIndices>(&self, indices: &TIndices) -> Option<Self::IndexType1>
     where
         for<'a> &'a TIndices: IntoIterator,
-        for<'a> <&'a TIndices as IntoIterator>::Item: Deref,
-        for<'a> <<&'a TIndices as IntoIterator>::Item as Deref>::Target: Copy,
-        for<'a> IndexTypeN: From<<<&'a TIndices as IntoIterator>::Item as Deref>::Target>,
+        for<'a> IndexTypeN: CopyFromRef<<&'a TIndices as IntoIterator>::Item>,
     {
-        if std::iter::zip(indices, &self.extents).all(|(i, e)| IndexTypeN::from(*i) < IndexTypeN::from(*e)) {
+        if std::iter::zip(indices, &self.extents)
+            .all(|(i, e)| IndexTypeN::copy_from_ref(i) < IndexTypeN::copy_from_ref(e))
+        {
             Some(
                 std::iter::zip(indices, &self.strides)
-                    .map(|(i, s)| IndexType1::from(IndexTypeN::from(*i)) * IndexType1::from(*s))
+                    .map(|(i, s)| IndexType1::from(IndexTypeN::copy_from_ref(i)) * IndexType1::copy_from_ref(s))
                     .sum(),
             )
         } else {
