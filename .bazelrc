@@ -8,3 +8,5 @@ build:clippy --config=clippy_settings
 build:rustfmt --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
 build:rustfmt --@rules_rust//rust/settings:rustfmt.toml=//:rustfmt.toml
 build:rustfmt --output_groups=rustfmt_checks
+
+test --test_output=errors
