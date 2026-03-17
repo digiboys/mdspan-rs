@@ -49,14 +49,13 @@
           },
         },
       },
-      // fetch with
-      // bazel build //tools/rust-analyzer/...
       "binary": {
         "path": "/Users/oliver/repos/mdspan-rs/bazel-out/../../../external/rules_rust++rust+rust_analyzer_1.86.0_tools/bin/rust-analyzer",
       },
     },
     "starpls": {
       "binary": {
+        "path": "/Users/oliver/repos/mdspan-rs/bazel-out/../../../external/+starpls+starpls/starpls",
         "arguments": [
           "server",
           "--experimental_enable_label_completions",

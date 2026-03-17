@@ -1,0 +1,9 @@
+filegroup(
+    name = "ide_init",
+    srcs = [
+        "//tools/rust-analyzer:rust_analyzer_toolchain",
+        "@buildifier_prebuilt//:buildifier",
+        "@rules_rust//:rustfmt",
+        "@starpls",
+    ],
+)

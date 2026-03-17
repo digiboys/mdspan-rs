@@ -1,4 +1,5 @@
 alias(
     name = "rust_analyzer_toolchain",
     actual = "@rules_rust//rust/toolchain:current_rust_analyzer_toolchain",
+    visibility = ["//tools:__pkg__"],
 )
