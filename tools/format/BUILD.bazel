@@ -1,10 +1,24 @@
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_multirun//:defs.bzl", "multirun")
 
-buildifier(
+[
+    buildifier(
+        name = "buildifier." + mode,
+        exclude_patterns = [
+            "./bazel-rust-analyzer/*",
+        ],
+        lint_mode = "warn",
+        mode = mode,
+    )
+    for mode in [
+        "check",
+        "fix",
+    ]
+]
+
+alias(
     name = "buildifier",
-    lint_mode = "warn",
-    mode = "fix",
+    actual = ":buildifier.fix",
 )
 
 multirun(
