@@ -14,7 +14,8 @@ where
         let i = guard.initialized_from - 1;
         let item = f(i);
 
-        // SAFETY: `i < N`, each slot is written once, and we move the boundary left by one.
+        // SAFETY: `i < N`, each slot is written once, and we move the boundary
+        // left by one.
         unsafe {
             guard.push_unchecked(item);
         }
@@ -22,8 +23,9 @@ where
 
     mem::forget(guard);
 
-    // SAFETY: every element was initialized.
-    unsafe { MaybeUninit::array_assume_init(array) }
+    // SAFETY: every element was initialized. `MaybeUninit<T>` has no destructor
+    // so `array` going out of scope afterwards is a no-op.
+    unsafe { core::ptr::read(&array as *const [MaybeUninit<T>; N] as *const [T; N]) }
 }
 
 struct RevGuard<'a, T, const N: usize> {
@@ -51,10 +53,10 @@ impl<T, const N: usize> Drop for RevGuard<'_, T, N> {
         debug_assert!(self.initialized_from <= N);
 
         // SAFETY: only `initialized_from..N` has been initialized.
-        unsafe {
-            self.array_mut
-                .get_unchecked_mut(self.initialized_from..N)
-                .assume_init_drop();
+        for i in self.initialized_from..N {
+            unsafe {
+                self.array_mut[i].assume_init_drop();
+            }
         }
     }
 }
