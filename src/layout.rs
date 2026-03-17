@@ -17,12 +17,14 @@ pub trait Mapping {
 
 fn extents_to_strides_layout_right<const N: usize>(extents: [usize; N]) -> [usize; N] {
     let mut stride = 1;
-    core::array::from_fn(|offset| {
+    let mut strides = core::array::from_fn(|offset| {
         let dimension = N - 1 - offset;
         let current = stride;
         stride *= extents[dimension];
         current
-    })
+    });
+    strides.reverse();
+    strides
 }
 
 pub trait Layout {
@@ -58,5 +60,37 @@ impl<const N: usize> Mapping for LayoutRightMapping<[usize; N]> {
         debug_assert!(std::iter::zip(indices, self.0).all(|(i, e)| i < e));
         let strides = extents_to_strides_layout_right(self.0);
         std::iter::zip(indices, strides).map(|(a, b)| a * b).sum()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_layout_right_mapping() {
+        let mapping = LayoutRightMapping([2, 2]);
+
+        unsafe {
+            assert_eq!(0, mapping.to_memory_index([0, 0]));
+            assert_eq!(1, mapping.to_memory_index([0, 1]));
+            assert_eq!(2, mapping.to_memory_index([1, 0]));
+            assert_eq!(3, mapping.to_memory_index([1, 1]));
+
+            assert_eq!(4, mapping.required_span_size());
+        }
+    }
+
+    #[test]
+    fn test_layout_right_mapping_stride() {
+        let mapping = LayoutRightMapping([2, 2]);
+
+        assert!(
+            std::iter::zip(
+                0..mapping.extents().len(),
+                extents_to_strides_layout_right(*mapping.extents())
+            )
+            .all(|(i, s)| mapping.stride(i) == s)
+        );
     }
 }
