@@ -1,3 +1,5 @@
+use array_from_fn_rev::array_from_fn_rev;
+
 pub trait Mapping {
     type Extents;
     type Indices;
@@ -17,14 +19,12 @@ pub trait Mapping {
 
 fn extents_to_strides_layout_right<const N: usize>(extents: [usize; N]) -> [usize; N] {
     let mut stride = 1;
-    let mut strides = core::array::from_fn(|offset| {
-        let dimension = N - 1 - offset;
+
+    array_from_fn_rev(|i| {
         let current = stride;
-        stride *= extents[dimension];
+        stride *= extents[i];
         current
-    });
-    strides.reverse();
-    strides
+    })
 }
 
 pub trait Layout {

@@ -1,0 +1,10 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+package(default_visibility = ["//src:__pkg__"])
+
+rust_library(
+    name = "array_from_fn_rev",
+    srcs = ["array_from_fn_rev.rs"],
+    crate_name = "array_from_fn_rev",
+    edition = "2024",
+)
