@@ -15,11 +15,10 @@ startup_options=(
 )
 
 common_args=(
-    "--@rules_rust//rust/settings:rustc_output_diagnostics=true"
-    "--@rules_rust//rust/settings:clippy_output_diagnostics=true"
-    "--@rules_rust//rust/settings:capture_clippy_output=true"
+    "--config=clippy",
     "--@rules_rust//rust/settings:error_format=json"
-    "--output_groups=+clippy_output"
+    "--output_groups=+clippy_output,-clippy_checks"
+
 )
 
 build_output="$(mktemp)"

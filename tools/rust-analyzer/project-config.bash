@@ -8,5 +8,4 @@ bazelisk \
     --bazel=bazelisk \
     --bazel_startup_option=--output_base="$workspace_dir/bazel-rust-analyzer" \
     --bazel_arg=--watchfs \
-    --bazel_arg=--output_groups=-clippy_checks,-rustfmt_checks \
     ${1:+"$1"} 2>/dev/null
