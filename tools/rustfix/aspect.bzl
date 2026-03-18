@@ -3,15 +3,18 @@ aspect to apply clippy fixes
 """
 
 load("@rules_rust//rust:defs.bzl", "rust_clippy_aspect")
+load("@rules_rust//rust:rust_common.bzl", _RUST_COMMON_PROVIDERS = "COMMON_PROVIDERS")
 
 def _rustfix_aspect_impl(target, ctx):
     phony = ctx.actions.declare_file(ctx.label.name + ".rustfix.phony")
 
     diagnostics_files = []
-    clippy_output = getattr(target[OutputGroupInfo], "clippy_output", depset())
+
+    clippy_output = target[OutputGroupInfo].clippy_output
     for f in clippy_output.to_list():
-        if f.path.endswith(".clippy.diagnostics"):
-            diagnostics_files.append(f)
+        if not f.path.endswith(".clippy.diagnostics"):
+            fail("clippy_output files should end with '.clippy.diagnostics'")
+        diagnostics_files.append(f)
 
     args = {
         "command": "touch {phony}".format(phony = phony.path),
@@ -54,4 +57,5 @@ rustfix_aspect = aspect(
     requires = [rust_clippy_aspect],
     attr_aspects = ["deps", "proc_macro_deps"],
     required_aspect_providers = [OutputGroupInfo],
+    required_providers = _RUST_COMMON_PROVIDERS,
 )
