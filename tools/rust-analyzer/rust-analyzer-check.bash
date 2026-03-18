@@ -13,11 +13,7 @@ fi
 bazelisk \
   "--output_base=${output_base}" \
   build \
-  --extra_toolchains=//toolchain:local_rust_stable_clippy_no_fail \
-  --aspects=//tools/rust-analyzer:aspect.bzl%clippy_stdout_aspect \
-  --@rules_rust//rust/settings:error_format=json \
-  --@rules_rust//rust/settings:capture_clippy_output=true \
   --output_groups=clippy_stdout \
-  --config=clippy_settings \
+  --config=clippy_diag \
   --keep_going \
   -- "$label" || true

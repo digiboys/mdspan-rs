@@ -1,19 +1,21 @@
-build:clippy_settings --@rules_rust//rust/settings:rustc_output_diagnostics=true
-build:clippy_settings --@rules_rust//rust/settings:clippy_output_diagnostics=true
+build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
+build --aspects=//tools/rustfix:aspect.bzl%rustfix_aspect
 
-build:clippy --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
+build --@rules_rust//rust/settings:rustc_output_diagnostics=true
+build --@rules_rust//rust/settings:clippy_output_diagnostics=true
+build --@rules_rust//rust/settings:rustfmt.toml=//:rustfmt.toml
+
+build:clippy_diag --@rules_rust//rust/settings:error_format=json
+build:clippy_diag --@rules_rust//rust/settings:capture_clippy_output=true
+build:clippy_diag --extra_toolchains=//toolchain:local_rust_stable_clippy_no_fail
+
 build:clippy --output_groups=clippy_checks
-build:clippy --config=clippy_settings
 
-build:rustfmt --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
-build:rustfmt --@rules_rust//rust/settings:rustfmt.toml=//:rustfmt.toml
 build:rustfmt --output_groups=rustfmt_checks
 
-build:rustfix --extra_toolchains=//toolchain:local_rust_stable_clippy_no_fail
-build:rustfix --aspects=//tools/rustfix:aspect.bzl%rustfix_aspect
-build:rustfix --@rules_rust//rust/settings:error_format=json
-build:rustfix --@rules_rust//rust/settings:capture_clippy_output=true
 build:rustfix --output_groups=rustfix
 build:rustfix --config=clippy_settings
+build:rustfix --config=clippy_diag
 
 test --test_output=errors
