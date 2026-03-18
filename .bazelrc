@@ -14,8 +14,11 @@ build:clippy --output_groups=clippy_checks
 
 build:rustfmt --output_groups=rustfmt_checks
 
-build:rustfix --output_groups=rustfix
-build:rustfix --config=clippy_settings
+# https://github.com/bazelbuild/bazel/issues/15516
+# Disable persistent action cache with --use_action_cache=false. Only disk and
+# remote cache are be disabled by the no-cache tag.
+build:rustfix --use_action_cache=false
 build:rustfix --config=clippy_diag
+build:rustfix --output_groups=rustfix
 
 test --test_output=errors
