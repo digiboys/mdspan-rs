@@ -1,0 +1,11 @@
+load("@platforms//host:constraints.bzl", "HOST_CONSTRAINTS")
+
+toolchain(
+    name = "local_rust_stable_clippy_no_fail",
+    exec_compatible_with = HOST_CONSTRAINTS,
+    tags = ["manual"],
+    target_compatible_with = HOST_CONSTRAINTS,
+    target_settings = ["@rules_rust//rust/toolchain/channel:stable"],
+    toolchain = "@local_clippy_no_fail_toolchain_tools//:rust_toolchain",
+    toolchain_type = "@rules_rust//rust:toolchain",
+)
