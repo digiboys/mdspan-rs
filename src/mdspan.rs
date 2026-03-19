@@ -1,10 +1,12 @@
 use std::marker::PhantomData;
 
 use mod_accessor::*;
+use mod_extents::*;
 use mod_layout::*;
 
 pub struct MDRef<'a, TElement, TExtents, TLayout, TAccessor>
 where
+    TExtents: Extents,
     TLayout: Layout,
     TAccessor: Accessor,
 {

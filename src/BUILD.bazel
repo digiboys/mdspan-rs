@@ -15,14 +15,35 @@ rust_test(
 )
 
 rust_library(
+    name = "mod_extents",
+    srcs = ["extents.rs"],
+    crate_name = "mod_extents",
+    edition = "2024",
+    deps = [
+        "//src/internal:constant",
+        "//src/internal:integer",
+    ],
+)
+
+rust_test(
+    name = "mod_extents_test",
+    crate = ":mod_extents",
+)
+
+rust_library(
     name = "mod_layout",
     srcs = ["layout.rs"],
     crate_name = "mod_layout",
     edition = "2024",
     deps = [
+        ":mod_extents",
+        "//src/internal:constant",
         "//src/internal:direction",
-        "//src/internal:exclusive_product_scan",
+        "//src/internal:exclusive_product_scan_from",
+        "//src/internal:fill_from_fn",
         "//src/internal:inner_product",
+        "//src/internal:rev_if",
+        "//src/internal:to_usize",
     ],
 )
 
@@ -38,6 +59,7 @@ rust_library(
     edition = "2024",
     deps = [
         ":mod_accessor",
+        ":mod_extents",
         ":mod_layout",
     ],
 )
@@ -54,6 +76,7 @@ rust_library(
     edition = "2024",
     deps = [
         ":mod_accessor",
+        ":mod_extents",
         ":mod_layout",
         ":mod_mdspan",
     ],
