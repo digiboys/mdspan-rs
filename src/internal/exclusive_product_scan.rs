@@ -1,16 +1,14 @@
+use direction::{Forward, Reverse};
 use integer::Integer;
 
 pub trait Direction {
-    fn build<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
+    fn invoke<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
     where
         T: Integer;
 }
 
-pub struct Forward;
-pub struct Reverse;
-
 impl Direction for Forward {
-    fn build<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
+    fn invoke<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
     where
         T: Integer,
     {
@@ -25,7 +23,7 @@ impl Direction for Forward {
 }
 
 impl Direction for Reverse {
-    fn build<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
+    fn invoke<const N: usize, T>(iter: impl DoubleEndedIterator<Item = T>) -> [T; N]
     where
         T: Integer,
     {
@@ -45,5 +43,5 @@ pub fn exclusive_product_scan<D: Direction, const N: usize, T>(
 where
     T: Integer,
 {
-    D::build(iter.into_iter())
+    D::invoke(iter.into_iter())
 }

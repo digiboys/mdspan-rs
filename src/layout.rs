@@ -22,68 +22,49 @@ pub trait Layout {
     type Mapping<TExtents>;
 }
 
-struct LayoutLeft;
-struct LayoutRight;
+macro_rules! impl_layout_left_or_right {
+    ($layout:ident, $mapping:ident, $scan_dir:ty) => {
+        struct $layout;
 
-impl Layout for LayoutLeft {
-    type Mapping<TExtents> = LayoutLeftMapping<TExtents>;
+        impl Layout for $layout {
+            type Mapping<E> = $mapping<E>;
+        }
+
+        struct $mapping<E>(E);
+
+        impl<const N: usize> Mapping for $mapping<[usize; N]> {
+            type Extents = [usize; N];
+            type Indices = [usize; N];
+
+            fn extents(&self) -> &Self::Extents {
+                &self.0
+            }
+
+            fn stride(&self, dimension: usize) -> usize {
+                assert!(dimension < self.0.len(), "dimension out of bounds");
+                let slice = if <$scan_dir as direction::IsForward>::VALUE {
+                    &self.0[..dimension]
+                } else {
+                    &self.0[(dimension + 1)..]
+                };
+                slice.iter().copied().product()
+            }
+
+            unsafe fn required_span_size(&self) -> usize {
+                self.0.iter().copied().product()
+            }
+
+            unsafe fn to_memory_index(&self, indices: Self::Indices) -> usize {
+                debug_assert!(std::iter::zip(indices, self.0).all(|(i, e)| i < e));
+                let strides = exclusive_product_scan::<$scan_dir, N, _>(self.0);
+                inner_product(indices, strides)
+            }
+        }
+    };
 }
 
-struct LayoutLeftMapping<TExtents>(TExtents);
-
-impl<const N: usize> Mapping for LayoutLeftMapping<[usize; N]> {
-    type Extents = [usize; N];
-    type Indices = [usize; N];
-
-    fn extents(&self) -> &Self::Extents {
-        &self.0
-    }
-
-    fn stride(&self, dimension: usize) -> usize {
-        assert!(dimension < self.0.len(), "dimension out of bounds");
-        self.0[..(dimension)].iter().copied().product()
-    }
-
-    unsafe fn required_span_size(&self) -> usize {
-        self.0.iter().copied().product()
-    }
-
-    unsafe fn to_memory_index(&self, indices: Self::Indices) -> usize {
-        debug_assert!(std::iter::zip(indices, self.0).all(|(i, e)| i < e));
-        let strides = exclusive_product_scan::<Forward, N, _>(self.0);
-        inner_product(indices, strides)
-    }
-}
-
-impl Layout for LayoutRight {
-    type Mapping<TExtents> = LayoutRightMapping<TExtents>;
-}
-
-struct LayoutRightMapping<TExtents>(TExtents);
-
-impl<const N: usize> Mapping for LayoutRightMapping<[usize; N]> {
-    type Extents = [usize; N];
-    type Indices = [usize; N];
-
-    fn extents(&self) -> &Self::Extents {
-        &self.0
-    }
-
-    fn stride(&self, dimension: usize) -> usize {
-        assert!(dimension < self.0.len(), "dimension out of bounds");
-        self.0[(dimension + 1)..].iter().copied().product()
-    }
-
-    unsafe fn required_span_size(&self) -> usize {
-        self.0.iter().copied().product()
-    }
-
-    unsafe fn to_memory_index(&self, indices: Self::Indices) -> usize {
-        debug_assert!(std::iter::zip(indices, self.0).all(|(i, e)| i < e));
-        let strides = exclusive_product_scan::<Reverse, N, _>(self.0);
-        inner_product(indices, strides)
-    }
-}
+impl_layout_left_or_right!(LayoutLeft, LayoutLeftMapping, direction::Forward);
+impl_layout_left_or_right!(LayoutRight, LayoutRightMapping, direction::Reverse);
 
 #[cfg(test)]
 mod tests {

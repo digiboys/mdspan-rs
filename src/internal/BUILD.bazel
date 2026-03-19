@@ -10,12 +10,20 @@ rust_library(
 )
 
 rust_library(
+    name = "direction",
+    srcs = ["direction.rs"],
+    crate_name = "direction",
+    edition = "2024",
+)
+
+rust_library(
     name = "exclusive_product_scan",
     srcs = ["exclusive_product_scan.rs"],
     crate_name = "exclusive_product_scan",
     edition = "2024",
     deps = [
         ":array_from_fn_rev",
+        ":direction",
         ":integer",
     ],
 )
