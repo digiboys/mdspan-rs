@@ -5,5 +5,5 @@ rust_binary(
     srcs = ["main.rs"],
     edition = "2024",
     tags = ["manual"],
-    deps = ["@crates//:rustfix"],
+    deps = ["@tool_crates//:rustfix"],
 )
