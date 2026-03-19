@@ -15,5 +15,6 @@ bazelisk \
   build \
   --output_groups=clippy_stdout \
   --config=clippy_diag \
+  --experimental_convenience_symlinks=ignore \
   --keep_going \
   -- "$label" || true
