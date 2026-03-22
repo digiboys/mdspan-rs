@@ -1,3 +1,5 @@
+common --experimental_isolated_extension_usages
+
 build --aspects=@rules_rust//rust:defs.bzl%rust_clippy_aspect
 build --aspects=@rules_rust//rust:defs.bzl%rustfmt_aspect
 build --aspects=//tools/rustfix:aspect.bzl%rustfix_aspect
