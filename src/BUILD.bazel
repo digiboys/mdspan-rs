@@ -1,4 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_library", "rust_test")
+load("//tools/emit_asm:emit_asm.bzl", "emit_asm")
 
 package(default_visibility = ["//:__subpackages__"])
 
@@ -62,4 +63,10 @@ rust_library(
 rust_test(
     name = "mdspan_test",
     crate = ":mdspan",
+)
+
+emit_asm(
+    name = "mod_layout_asm",
+    testonly = True,
+    src = ":mod_layout_test",
 )
