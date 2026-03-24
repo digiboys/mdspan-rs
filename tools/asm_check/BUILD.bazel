@@ -1,0 +1,64 @@
+load("@bazel_skylib//rules:write_file.bzl", "write_file")
+load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_test")
+load("@rules_shell//shell:sh_test.bzl", "sh_test")
+
+rust_binary(
+    name = "asm_check",
+    srcs = ["main.rs"],
+    edition = "2024",
+    deps = [
+        "@tool_crates//:anyhow",
+        "@tool_crates//:clap",
+        "@tool_crates//:regex",
+        "@tool_crates//:serde",
+        "@tool_crates//:toml",
+    ],
+)
+
+rust_test(
+    name = "asm_check_test",
+    crate = ":asm_check",
+)
+
+write_file(
+    name = "mod_layout_asm_check_config",
+    out = "mod_layout_asm_check.toml",
+    content = [
+        "[[check]]",
+        "functions = [\"mod_layout::tests::test_layout_(right|left)_mapping_stride_out_of_bounds\"]",
+        "must_contain = [\"bl[[:space:]]+_core::panicking::panic_fmt\"]",
+        "",
+        "[[check]]",
+        "functions = [\"mod_layout::.*\"]",
+        "exclude = [\"mod_layout::tests::test_layout_(right|left)_mapping_stride_out_of_bounds\"]",
+        "must_not_contain = [\"bl[[:space:]]+_core::panicking::panic_fmt\"]",
+        "",
+    ],
+)
+
+write_file(
+    name = "mod_layout_asm_test_script",
+    out = "mod_layout_asm_test.bash",
+    content = [
+        "#!/usr/bin/env bash",
+        "set -euo pipefail",
+        "\"$1\" --asm \"$2\" --config \"$3\"",
+        "",
+    ],
+    is_executable = True,
+)
+
+sh_test(
+    name = "mod_layout_asm_test",
+    srcs = [":mod_layout_asm_test_script"],
+    args = [
+        "$(location :asm_check)",
+        "$(location //src:mod_layout_asm)",
+        "$(location :mod_layout_asm_check_config)",
+    ],
+    data = [
+        ":asm_check",
+        ":mod_layout_asm_check_config",
+        "//src:mod_layout_asm",
+    ],
+)
