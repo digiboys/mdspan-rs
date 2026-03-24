@@ -2,17 +2,20 @@ module(name = "mdspan_rs")
 
 bazel_dep(name = "rules_rust", version = "0.69.0")
 
-crate = use_extension("@rules_rust//crate_universe:extensions.bzl", "crate")
-crate.spec(
+crates = use_extension(
+    "@rules_rust//crate_universe:extensions.bzl",
+    "crate",
+)
+crates.spec(
     package = "num-integer",
     version = "0.1.46",
 )
-crate.spec(
+crates.spec(
     package = "num-traits",
     version = "0.2.19",
 )
-crate.from_specs(name = "crates")
-use_repo(crate, "crates")
+crates.from_specs(name = "crates")
+use_repo(crates, "crates")
 
 rust = use_extension(
     "@rules_rust//rust:extensions.bzl",
@@ -20,7 +23,10 @@ rust = use_extension(
     dev_dependency = True,
 )
 rust.toolchain(versions = ["1.86.0"])
-use_repo(rust, "rust_toolchains")
+use_repo(
+    rust,
+    "rust_toolchains",
+)
 
 register_toolchains(
     "@rust_toolchains//:all",
@@ -42,18 +48,59 @@ clippy_no_fail_toolchain_tools(
     name = "local_clippy_no_fail_toolchain_tools",
 )
 
-tools_crate = use_extension(
+tool_crates = use_extension(
     "@rules_rust//crate_universe:extensions.bzl",
     "crate",
     dev_dependency = True,
+    isolate = True,
 )
-tools_crate.spec(
+tool_crates.spec(
     package = "rustfix",
     version = "0.9.4",
 )
-tools_crate.from_specs(name = "tool_crates")
-use_repo(tools_crate, "tool_crates")
+tool_crates.from_specs(name = "tool_crates")
+use_repo(tool_crates, "tool_crates")
 
+rust_host_tools = use_extension(
+    "@rules_rust//rust:extensions.bzl",
+    "rust_host_tools",
+    dev_dependency = True,
+)
+rust_host_tools.host_tools(
+    name = "rust_host_tools_nightly",
+    version = "nightly",
+)
+use_repo(
+    rust_host_tools,
+    "rust_host_tools_nightly",
+)
+
+bindeps = use_extension(
+    "@rules_rust//crate_universe:extensions.bzl",
+    "crate",
+    dev_dependency = True,
+    isolate = True,
+)
+bindeps.spec(
+    artifact = "bin",
+    package = "rustfilt",
+    version = "0.2.1",
+)
+bindeps.annotation(
+    crate = "rustfilt",
+    gen_all_binaries = True,
+)
+bindeps.from_specs(
+    name = "bindeps",
+    host_tools = "@rust_host_tools_nightly",
+)
+use_repo(bindeps, "bindeps")
+
+bazel_dep(
+    name = "bazel_skylib",
+    version = "1.9.0",
+    dev_dependency = True,
+)
 bazel_dep(
     name = "buildifier_prebuilt",
     version = "8.2.0.2",
