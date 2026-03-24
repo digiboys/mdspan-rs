@@ -1,4 +1,11 @@
-visibility("//tools/emit_asm/...")
+load(
+    "@rules_rust//rust:rust_common.bzl",
+    "CrateInfo",
+    "DepInfo",
+    _RUST_COMMON_PROVIDERS = "COMMON_PROVIDERS",
+)
+
+visibility("///...")
 
 def _sysroot(toolchain):
     """Derive --sysroot from the rustc executable path.
@@ -122,3 +129,53 @@ cat {infile} | {rustfilt} > {outfile}
     )
 
     return asm_file
+
+def _emit_asm_impl(ctx):
+    crate_info = ctx.attr.src[CrateInfo]
+    dep_info = ctx.attr.src[DepInfo]
+    toolchain = ctx.toolchains["@rules_rust//rust:toolchain_type"]
+
+    rustc_flags = list(ctx.attr.rustc_flags)
+    if (ctx.attr.opt):
+        rustc_flags.extend([
+            "-C",
+            "opt-level={}".format(ctx.attr.opt),
+        ])
+
+    asm_file = emit_asm_action(
+        ctx,
+        crate_info,
+        dep_info,
+        toolchain,
+        rustc_flags,
+    )
+
+    return [
+        DefaultInfo(files = depset([asm_file])),
+        OutputGroupInfo(asm = depset([asm_file])),
+    ]
+
+emit_asm = rule(
+    implementation = _emit_asm_impl,
+    attrs = {
+        "src": attr.label(
+            mandatory = True,
+            providers = _RUST_COMMON_PROVIDERS,
+            doc = "rust_library, rust_binary, or rust_test target",
+        ),
+        "rustc_flags": attr.string_list(
+            doc = "additional rustc flags",
+        ),
+        "opt": attr.string(
+            default = "2",
+            values = ["", "0", "1", "2", "3", "s", "z"],
+            doc = "rustc opt-level",
+        ),
+        "_rustfilt": attr.label(
+            default = "@bindeps//:rustfilt__rustfilt",
+            executable = True,
+            cfg = "exec",
+        ),
+    },
+    toolchains = ["@rules_rust//rust:toolchain_type"],
+)
